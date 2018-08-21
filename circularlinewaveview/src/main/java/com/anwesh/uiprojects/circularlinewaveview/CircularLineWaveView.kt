@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.circularlinewaveview
  * Created by anweshmishra on 22/08/18.
  */
 
+import android.app.Activity
 import android.view.View
 import android.view.MotionEvent
 import android.content.Context
@@ -189,6 +190,14 @@ class CircularLineWaveView (ctx : Context) : View(ctx) {
             clw.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity) : CircularLineWaveView {
+            val view : CircularLineWaveView = CircularLineWaveView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
