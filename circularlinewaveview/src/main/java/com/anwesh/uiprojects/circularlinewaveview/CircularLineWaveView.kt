@@ -27,7 +27,7 @@ fun Canvas.drawCLWNode(i : Int, scale : Float, paint : Paint) {
     val path : Path = Path()
     for (j in 270..(270 + (180 * scale).toInt())) {
         val x : Float = (r) * (1 - 2 * index1) * index * Math.cos(j *   Math.PI/180).toFloat()
-        val y : Float = (r) * (1 - 2 * index1) * index * Math.sin(j *   Math.PI/180).toFloat()
+        val y : Float = (r)  * Math.sin(j *   Math.PI/180).toFloat()
         if (i == 270) {
             path.moveTo(x, y)
         } else {
@@ -101,5 +101,49 @@ class CircularLineWaveView (ctx : Context) : View(ctx) {
                 animated = false
             }
         }
+    }
+
+    data class CLWNode(var i : Int, val state : State = State()) {
+        private var next : CLWNode? = null
+        private var prev : CLWNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = CLWNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawCLWNode(i, state.scale)
+            prev?.draw(canvas, paint)
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            state.update {
+                cb(i, it)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : CLWNode {
+            var curr : CLWNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+
     }
 }
