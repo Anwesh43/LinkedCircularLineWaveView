@@ -12,8 +12,9 @@ import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
+import android.util.Log
 
-val nodes : Int = 5
+val nodes : Int = 10
 
 fun Canvas.drawCLWNode(i : Int, scale : Float, paint : Paint) {
     val w : Float = width.toFloat()
@@ -22,14 +23,17 @@ fun Canvas.drawCLWNode(i : Int, scale : Float, paint : Paint) {
     val index : Int = (i) % 2
     val index1 : Int = (i / 2) % 2
     val r : Float = gap / 2
+    paint.style = Paint.Style.STROKE
     paint.color = Color.parseColor("#1976D2")
+    paint.strokeWidth = Math.min(w, h) / 60
+    paint.strokeCap = Paint.Cap.ROUND
     save()
     translate(w / 2, gap / 2 + gap * i)
     val path : Path = Path()
     for (j in 270..(270 + (180 * scale).toInt())) {
         val x : Float = (r) * (1 - 2 * index1) * index * Math.cos(j *   Math.PI/180).toFloat()
         val y : Float = (r)  * Math.sin(j *   Math.PI/180).toFloat()
-        if (i == 270) {
+        if (j == 270) {
             path.moveTo(x, y)
         } else {
             path.lineTo(x, y)
@@ -68,6 +72,7 @@ class CircularLineWaveView (ctx : Context) : View(ctx) {
 
         fun update(cb : (Float) -> Unit) {
             scale += 0.1f * dir
+            Log.d("scale", "${scale}")
             if (Math.abs(scale - prevScale) > 1) {
                 scale = prevScale + dir
                 dir = 0f
