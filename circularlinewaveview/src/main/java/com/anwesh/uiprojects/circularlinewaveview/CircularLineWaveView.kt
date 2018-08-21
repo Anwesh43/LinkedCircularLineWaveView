@@ -119,7 +119,7 @@ class CircularLineWaveView (ctx : Context) : View(ctx) {
         }
 
         fun draw(canvas : Canvas, paint : Paint) {
-            canvas.drawCLWNode(i, state.scale)
+            canvas.drawCLWNode(i, state.scale, paint)
             prev?.draw(canvas, paint)
         }
 
@@ -166,6 +166,28 @@ class CircularLineWaveView (ctx : Context) : View(ctx) {
 
         fun startUpdating(cb : () -> Unit) {
             curr.startUpdating(cb)
+        }
+    }
+
+    data class Renderer(var view : CircularLineWaveView) {
+
+        private val animator : Animator = Animator(view)
+        private val clw : CircularLineWave = CircularLineWave(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#BDBDBD"))
+            clw.draw(canvas, paint)
+            animator.animate {
+                clw.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            clw.startUpdating {
+                animator.start()
+            }
         }
     }
 }
